@@ -4,7 +4,6 @@ from typing import Callable, List
 
 import nltk
 
-from Shared.constants import HTMLConstants
 """
 Point of these two classes is to allow me to make a constant object dictionary.
 Acts somewhat similar to a String Enum or a object in Javascript
@@ -78,18 +77,3 @@ def set_similarity(a: set, b: set) -> float:
     count_intersection = len(a.intersection(b))
     count_difference = len(a.difference(b))
     return count_intersection / (count_intersection + count_difference)
-
-
-def has_single_answer(input_type: str) -> bool:
-    """
-    Helper to determine whether the input has a single selectable answer
-    :param input_type:
-    :return:
-    """
-    if input_type == HTMLConstants.InputTypes.TEXT or \
-                    input_type == HTMLConstants.InputTypes.FILE or \
-                    input_type == HTMLConstants.InputTypes.EMAIL or \
-                    input_type == HTMLConstants.InputTypes.PHONE:
-        return True
-    else:
-        return False

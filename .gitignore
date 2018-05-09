@@ -56,4 +56,5 @@ __pycache__/
 *.db
 *.db-journal
 *.log
+.env
 /blurbs.json

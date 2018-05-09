@@ -11,7 +11,7 @@ from selenium.webdriver.firefox.webelement import FirefoxWebElement
 from selenium.webdriver.support.ui import Select
 
 from Shared.constants import HTMLConstants as HTML
-from Bot.LinkedIn.constants import LinkedInConstant as LC
+from Bot.LinkedIn.constants import Constants as LC
 from Shared.selenium_helpers import get_rendered_html, scroll_infinitely
 from Shared.models import Person
 

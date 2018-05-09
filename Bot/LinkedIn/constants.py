@@ -4,7 +4,7 @@ from Shared.helpers import Const
 from Shared.models import Person
 
 
-class LinkedInConstant(Const):
+class Constants(Const):
     WEBSITE_NAME = 'LinkedIn'
 
     class URL(Const):
@@ -17,7 +17,7 @@ class LinkedInConstant(Const):
         LOGIN_PASSWORD = 'session_password'
 
     class XPath(Const):
-        NEWS_FEED = "//div[@class='feed-s-update__scroll']"
+        NEWS_FEED = "//div[contains(@class,'sharing-create-share-view')]"
         SEARCH_RESULTS_LIST = "//ul[contains(@class,'results-list')]"
         NEXT_BUTTON = "//button[@class='next']"
 

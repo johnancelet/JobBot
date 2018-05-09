@@ -2,7 +2,6 @@ from Shared.helpers import Const
 
 
 class HTMLConstants(Const):
-
     class TagType(Const):
         DIV = 'div'
         SPAN = 'span'
