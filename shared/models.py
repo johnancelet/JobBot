@@ -44,3 +44,4 @@ class ConnectionState(Enum):
     Connected = 0
     CanConnect = 1
     CannotConnect = 2
+    ConnectionPending = 3

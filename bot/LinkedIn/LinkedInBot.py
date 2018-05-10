@@ -97,6 +97,10 @@ class LinkedInBot:
         time.sleep(LC.WaitTime.VIEW)
         self.driver.close()
         self.driver.switch_to.window(old_tab)
-    
+
+    @sleep_after_function(LC.WaitTime.VIEW)
+    def send_connection_request(self, person: Person):
+        pass
+
     def close(self):
         self.driver.close()

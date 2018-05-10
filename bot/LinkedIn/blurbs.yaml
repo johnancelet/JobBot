@@ -1,0 +1,16 @@
+intro: |
+  Hey {name} I noticed you are recruiter at {company} where I'm interested in working because
+
+companies:
+  microsoft: |
+    I'm a huge fan of all the open source projects developed by Microsoft like TypeScript which VSCode have significantly improved my quality of life at work.
+    Furthermore, I'm impressed by C#'s' great language design as well as the continued efforts make it cross platform.
+    I'd love to be a contributor on the team of people that created these great tools and other products. 
+  amazon: |
+    Amazon blurb
+  google: |
+    Google blurb
+
+outro: |
+  Anyway I would like to connect so we can keep in touch if any oppurtunies arise at {company}.
+  
