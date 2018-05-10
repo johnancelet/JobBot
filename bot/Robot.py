@@ -1,3 +1,5 @@
+from shared.helpers import Const
+
 class RobotConstants(Const):
     WAIT_IMPLICIT = 5
     WAIT_DELTA = .100

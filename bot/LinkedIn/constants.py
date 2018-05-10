@@ -1,7 +1,7 @@
 import re
 
-from Shared.helpers import Const
-from Shared.models import Person
+from shared.helpers import Const
+from shared.models import Person
 
 
 class Constants(Const):
@@ -28,9 +28,6 @@ class Constants(Const):
     class Class(Const):
         SEARCH_RESULT = 'search-result'
 
-        ACTOR_NAME = 'actor-name'
-        ACTOR_TITLE = 'subline-level-1'
-        ACTOR_POSITION = 'search-result__snippets'
         ACTOR_LINK = 'search-result__result-link'
         ACTOR_LOCATION = 'subline-level-2'
 
@@ -50,3 +47,11 @@ class Constants(Const):
         SEARCH = 10
         VISIT = 15
         VIEW = 10
+
+    # A bit against the grain (Of the rest of the page) but I think this is a better way of doing it
+    class ProfilePage(Const):
+        CLASS_SELECTOR_PERSON_NAME = 'pv-top-card-section__name'
+        CLASS_SELECTOR_PERSON_HEADLINE = 'pv-top-card-section__headline'
+        CLASS_SELECTOR_PERSON_COMPANY = 'pv-top-card-v2-section__company-name'
+        CLASS_SELECTOR_PERSON_LOCATION = 'pv-top-card-section__location'
+        CLASS_SELECTOR_CONNECTION_BUTTONS = 'pv-s-profile-actions'

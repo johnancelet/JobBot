@@ -2,7 +2,6 @@ import time
 
 from typing import NamedTuple
 
-from bs4 import BeautifulSoup
 import peewee
 
 from selenium import common, webdriver
@@ -11,12 +10,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 
-from Bot.LinkedIn.constants import Constants as LC
-from Bot.LinkedIn.LinkedInParser import LinkedInParser
+from bot.LinkedIn.constants import Constants as LC
+from bot.LinkedIn.LinkedInParser import LinkedInParser
 
-from Shared.models import Person
-from Shared.selenium_helpers import scroll_infinitely, open_link_new_tab, scroll_gradually, adjust_zoom
-from Shared.helpers import sleep_after_function, Const
+from shared.models import Person
+from shared.selenium_helpers import scroll_infinitely, open_link_new_tab, adjust_zoom
+from shared.helpers import sleep_after_function
 
 
 class LinkedInConfig(NamedTuple):
@@ -28,6 +27,7 @@ class LinkedInBot:
     def __init__(self, driver: webdriver.Chrome, config: LinkedInConfig):
         self.config = config
         self.driver = driver
+        self.parser = LinkedInParser()
 
         # Create necessary tables
         self._create_tables()
@@ -62,51 +62,41 @@ class LinkedInBot:
         while True:
             scroll_infinitely(self.driver)
             adjust_zoom(self.driver, 50)
-            list_persons = LinkedInParser.parse_result_page(self.driver)
+            person_links = self.parser.get_person_links_from_results_page(self.driver)
 
-            for person in list_persons:
+            for person_link in person_links:
                 try:
-                    Person.get(Person.relative_link == person.relative_link)
-                except peewee.DoesNotExist as e:
-                    self.visit_profile(person, new_tab=True)
+                    p = Person.get(Person.link == person_link)
+                    print(p)
+                except peewee.DoesNotExist:
+                    self.visit_profile(person_link)
                     count_visits += 1
 
             try:
                 self.driver.find_element(By.XPATH, LC.XPath.NEXT_BUTTON).send_keys(Keys.ENTER)
                 adjust_zoom(self.driver, 200)
             except common.exceptions.NoSuchElementException as e:
+                print("Reached last page after: {0} visits".format(count_visits))
                 break
 
             if count_visits > LC.Constraint.MAX_VISITS:
                 break
 
     @sleep_after_function(LC.WaitTime.VISIT)
-    def visit_profile(self, p: Person, new_tab=True):
-        try:
-            p: Person = Person.get(Person.relative_link == p.relative_link)
-        except peewee.DoesNotExist as e:
-            p: Person = Person.create(
-                relative_link=p.relative_link,
-                full_link=p.full_link,
-                name=p.name,
-                title=p.title,
-                position=p.position,
-                company=p.company,
-                location=p.location
-            )
+    def visit_profile(self, link: str):
+        print("Visiting link: {0}".format(link))
 
-        if new_tab:
-            old_tab = self.driver.window_handles[0]
-            open_link_new_tab(self.driver, p.full_link)
-            if len(self.driver.window_handles) > 1:
-                new_tab = self.driver.window_handles[1]
-                self.driver.switch_to.window(new_tab)
-                time.sleep(LC.WaitTime.VIEW)
-                self.driver.close()
-                self.driver.switch_to.window(old_tab)
+        old_tab = self.driver.window_handles[0]
+        open_link_new_tab(self.driver, link)
 
-        elif p.visited is False:
-            self.driver.get(p.full_link)
+        new_tab = self.driver.window_handles[1]
+        self.driver.switch_to.window(new_tab)
 
-        p.visited = True
-        LC.String.person_visited(p)
+        self.parser.save_person_from_profile_page(self.driver, link)
+
+        time.sleep(LC.WaitTime.VIEW)
+        self.driver.close()
+        self.driver.switch_to.window(old_tab)
+    
+    def close(self):
+        self.driver.close()

@@ -4,10 +4,14 @@ import dotenv
 
 from selenium import webdriver
 
-from Bot.LinkedIn.LinkedInBot import LinkedInBot, LinkedInConfig
+from bot.LinkedIn.LinkedInBot import LinkedInBot, LinkedInConfig
 
 if __name__ == "__main__":
-    dotenv.load_dotenv(".env")
+    # No idea why I have to do this but otherwise an old version of the variable gets used!
+    # os.environ.pop("CHROME_DRIVER_PATH")
+
+
+    dotenv.load_dotenv(dotenv.find_dotenv('.env', True))
 
     bot = LinkedInBot(
         webdriver.Chrome(os.environ.get("CHROME_DRIVER_PATH")),
@@ -16,4 +20,4 @@ if __name__ == "__main__":
     bot.login()
     query_string = r'title=University%20Recruiter%20'
     bot.search_people_by_query(query_string)
-    bot.shut_down()
+    bot.close()
