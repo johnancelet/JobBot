@@ -3,16 +3,14 @@ from enum import Enum
 import urllib.parse as urlparse
 
 from Bot.AngelBot import AngelBot
-from Bot.Indeed.IndeedBot import IndeedRobot
 from Bot.LinkedIn.LinkedInBot import LinkedInBot
 
 from userconfig import UserConfig
 
 
 class JobBot(Enum):
-    IndeedBot = 1
-    AngelBot = 2
-    LinkedInBot = 3
+    AngelBot = 1
+    LinkedInBot = 2
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run JobBot')
@@ -21,36 +19,8 @@ if __name__ == "__main__":
     unformatted_display_query = "Bot being initialized with this query:\n\n {0}"
 
     args = parser.parse_args()
-    if args.option == JobBot.IndeedBot.value:
-        q1 = '((intern OR co-op) AND ' \
-             '(software OR develop OR engineer OR mechanical OR mechatronics ' \
-             'OR programming OR android OR ios OR technical OR qa OR testing OR automation)) ' \
-             '-"marketing" -"human resources" -"hr" -unpaid -volunteer -"labor" -"labour" -secretary ' \
-             '-receptionist -"assistant" -clerk -instructor -coordinator -tutor -cook -operator -manager -accountant ' \
-             '-senior -director -"film" -"social worker" -teacher -designer -psychologist -"architect" ' \
-             '-optician -optician -"RN" -"accounting" -"mechanic" -"producer" -"counsellor" -"representative" ' \
-             '-"accounts payable" -"plumber"'
 
-        params = {
-            'q': q1,
-            'limit': '25',
-            # 'jt':'internship',
-            'fromage': '10',
-            'language': 'en',
-            'co': 'ca',
-            'userip': "1.2.3.4",
-            'useragent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-        }
-
-        print(unformatted_display_query.format(q1))
-
-        bot = IndeedRobot(UserConfig())
-        bot.search_with_api(params=params)
-        bot.login()
-        bot.apply_jobs()
-        bot.shut_down()
-
-    elif args.option == JobBot.AngelBot.value:
+    if args.option == JobBot.AngelBot.value:
         query_parameters = {"types": "internship",
                             "roles": [
                                 "Software Engineer"

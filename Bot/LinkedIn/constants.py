@@ -1,6 +1,6 @@
 import re
 
-from Shared.helpers import Const
+from Shared.constants import Const
 from Shared.models import Person
 
 

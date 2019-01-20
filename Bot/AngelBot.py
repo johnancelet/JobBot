@@ -11,7 +11,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from Bot.Robot import Robot, RobotConstants
-from Shared.helpers import Const, sleep_before_function
+from Shared.helpers import sleep_before_function
+from Shared.constants import Const
 from Shared.selenium_helpers import does_element_exist, scroll_infinitely
 from Shared.models import Job
 from userconfig import UserConfig

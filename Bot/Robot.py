@@ -4,7 +4,7 @@ from datetime import datetime
 from selenium import webdriver
 
 from Application.ApplicationBuilder import ApplicationBuilder
-from Shared.helpers import Const
+from Shared.constants import Const
 from Shared.models import Job, Question, Person
 from userconfig import UserConfig
 

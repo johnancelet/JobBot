@@ -6,7 +6,7 @@ from nltk.metrics.distance import edit_distance
 from Application.constants import ApplicationBuilderConstants as ABCs
 from Shared.constants import HTMLConstants
 from Shared.helpers import tokenize_text, any_in, set_similarity, has_single_answer
-from Shared.models import Blurb, Tag, Question, create_question_from_model, ModelConstants
+from Shared.models import Blurb, Tag, ModelConstants
 from userconfig import UserConfig
 
 
@@ -25,59 +25,6 @@ class ApplicationBuilder:
         :return:
         """
         return self.user_config.DEFAULT_RESUME
-
-    @staticmethod
-    def add_question_to_database(q_object: Question):
-        def _categorize_question(q_instance: Question):
-            split_tokens = q_instance.tokens.split(ModelConstants.TOKEN_DELIMITER)
-            if len(split_tokens) > ABCs.QuestionNeedle.LENGTH_THRESHOLD_TOKENS:
-                q_instance.question_category = ABCs.QuestionTypes.LONG
-
-            else:
-                if any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_EMAIL):
-                    q_instance.question_category = ABCs.QuestionTypes.EMAIL
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_GENDER):
-                    q_instance.question_category = ABCs.QuestionTypes.GENDER
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_RACE):
-                    q_instance.question_category = ABCs.QuestionTypes.RACE
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_RESUME):
-                    q_instance.question_category = ABCs.QuestionTypes.RESUME
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_MESSAGE):
-                    q_instance.question_category = ABCs.QuestionTypes.MESSAGE
-
-                elif any_in(q_instance.label.split(' '), ABCs.QuestionNeedle.KEYWORDS_LOCATION):
-                    q_instance.question_category = ABCs.QuestionTypes.LOCATION
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_EXPERIENCE):
-                    q_instance.question_category = ABCs.QuestionTypes.EXPERIENCE
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_EDUCATION):
-                    q_instance.question_category = ABCs.QuestionTypes.EDUCATION
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_LANGUAGE):
-                    q_instance.question_category = ABCs.QuestionTypes.LANGUAGE
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_CERTIFICATION):
-                    q_instance.question_category = ABCs.QuestionTypes.CERTIFICATION
-
-                elif any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_PERSONAL):
-                    q_instance.question_category = ABCs.QuestionTypes.PERSONAL
-
-                elif q_instance.input_type == HTMLConstants.InputTypes.FILE:
-                    q_instance.question_category = ABCs.QuestionTypes.ADDITIONAL_ATTACHMENTS
-
-                if any_in(split_tokens, ABCs.QuestionNeedle.KEYWORDS_OPTIONAL):
-                    q_instance.optional = True
-
-            q_instance.save()
-
-        q = create_question_from_model(q_object)
-        if q is not None:
-            _categorize_question(q)
 
     def generate_message(self, description: str, company: str) -> Optional[str]:
         """
@@ -120,46 +67,6 @@ class ApplicationBuilder:
             final_message = "{0}\n\n{1}\n{2}".format(blurb_intro.short_text, message_body, blurb_end.short_text)
 
         return final_message.replace(ABCs.COMPANY_PLACEHOLDER, company)
-
-    @staticmethod
-    def generate_answer_from_questions(question: Question) -> Optional[str]:
-        unknown_tokens = set(question.tokens.split(ModelConstants.TOKEN_DELIMITER))
-
-        def question_similarity(q: Question) -> float:
-            current_tokens = set(q.tokens.split(ModelConstants.TOKEN_DELIMITER))
-            return set_similarity(current_tokens, unknown_tokens)
-
-        def pick_best_answer(target_question: Question) -> str:
-            answers = question.additional_info.split(ModelConstants.DELIMITER.ANSWER)
-            min_answer = None
-            min_score = float('inf')
-            for answer in answers:
-                score = edit_distance(answer, target_question.answer)
-                if score < min_score:
-                    min_answer = answer
-                    min_score = score
-            return min_answer
-
-        questions_with_answers = Question \
-            .select() \
-            .where(
-                (Question.website == question.website) &
-                Question.answer.is_null(False) &
-                (Question.question_category == question.question_category)
-        )
-
-        sorted_questions: List[Question] = sorted(questions_with_answers, key=question_similarity, reverse=True)
-
-        if has_single_answer(question.input_type):
-            if question.input_type == HTMLConstants.InputTypes.SELECT_ONE or \
-                    question.input_type == HTMLConstants.InputTypes.RADIO:
-                best_answer = pick_best_answer(sorted_questions[0])
-            else:
-                best_answer = sorted_questions[0].answer
-        else:
-            raise NotImplementedError
-
-        return best_answer
 
     def pick_best_blurbs(self, job_description: str) -> List[str]:
         key_words = tokenize_text(job_description)

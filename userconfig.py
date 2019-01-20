@@ -1,16 +1,16 @@
 import os
 
-from Shared.helpers import Const
+from Shared.constants import Const
 
 
 class UserConfig(Const):
     EMAIL = os.environ['EMAIL']
     PASSWORD = os.environ['PASSWORD']
-    INDEED_API_KEY = os.environ['INDEED_API_KEY']
 
     class Path(Const):
         JSON_TAG_BLURBS = r'blurbs.json'
-        DEFAULT_RESUME = os.environ['DEFAULT_RESUME']
+        # TODO: Add this as an arguement
+        DEFAULT_RESUME = os.environ.get('DEFAULT_RESUME') or '' 
 
     class Settings(Const):
         # Booleans
